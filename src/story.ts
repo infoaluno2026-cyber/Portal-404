@@ -22,6 +22,7 @@ export interface SpriteAnimation {
   file: string;
   frames: number;
   framesPerSecond: number;
+  columns?: number;
   flip?: boolean;
 }
 
@@ -61,7 +62,8 @@ export const characters: Record<string, CharacterDefinition> = {
     portrait: 'characters/lira.png',
     animations: {
       idle: { file: 'characters/lira.png', frames: 1, framesPerSecond: 1 },
-      run: { file: 'characters/lira.png', frames: 1, framesPerSecond: 1 },
+      run: { file: 'characters/lira-run-back.png', frames: 12, framesPerSecond: 12, columns: 6 },
+      attack: { file: 'characters/lira-attack.png', frames: 3, framesPerSecond: 8, columns: 3 },
     },
   },
   virus: {
@@ -69,9 +71,9 @@ export const characters: Record<string, CharacterDefinition> = {
     name: 'Vírus',
     role: 'villain',
     health: 100,
-    portrait: 'characters/virus-walk.png',
+    portrait: 'characters/virus.png',
     animations: {
-      idle: { file: 'characters/virus-walk.png', frames: 7, framesPerSecond: 7 },
+      idle: { file: 'characters/virus.png', frames: 1, framesPerSecond: 1 },
     },
   },
   pet: {

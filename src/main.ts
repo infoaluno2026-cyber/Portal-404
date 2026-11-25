@@ -17,6 +17,7 @@ const canvas = element<HTMLCanvasElement>('gameCanvas');
 const context = canvas.getContext('2d');
 if (!context) throw new Error('Canvas 2D indisponível neste navegador.');
 
+const gameScreen = element<HTMLDivElement>('gameScreen');
 const overlay = element<HTMLDivElement>('overlay');
 const primaryButton = element<HTMLButtonElement>('primaryButton');
 const runnerControls = element<HTMLDivElement>('runnerControls');
@@ -32,6 +33,7 @@ const renderer = new GameRenderer(context);
 let phase: Phase = 'title';
 let currentEncounter: EncounterDefinition | undefined;
 let battle: BattleController | undefined;
+const duelPosition = { x: 0, y: 0 };
 let lastFrame = 0;
 let elapsed = 0;
 
@@ -44,6 +46,7 @@ function setOverlay(eyebrow: string, title: string, copy: string, button: string
   element<HTMLElement>('overlayTitle').textContent = title;
   element<HTMLElement>('overlayCopy').textContent = copy;
   primaryButton.querySelector('span')!.textContent = button;
+  primaryButton.setAttribute('aria-label', phase === 'title' ? 'Iniciar jogo' : button);
   element<HTMLElement>('overlayHint').textContent = hint;
   overlay.classList.remove('is-hidden');
 }
@@ -109,6 +112,8 @@ function setPhase(next: Phase): void {
   };
   element<HTMLSpanElement>('phaseLabel').textContent = labels[next];
   element<HTMLDivElement>('phaseChip').classList.toggle('is-duel', next === 'duel' || next === 'result');
+  gameScreen.classList.toggle('is-title-screen', next === 'title');
+  overlay.classList.toggle('is-title-screen', next === 'title');
   runnerControls.hidden = next !== 'run';
   duelControls.hidden = next !== 'duel';
   const battleScene = next === 'duel' || next === 'result'
@@ -140,9 +145,19 @@ function beginEncounter(encounter: EncounterDefinition): void {
 function startBattle(): void {
   if (!currentEncounter) return;
   battle = new BattleController(currentEncounter.battle);
+  duelPosition.x = 0;
+  duelPosition.y = 0;
   duelLog.textContent = 'Duelo iniciado. Escolha uma ação.';
   setPhase('duel');
   setStatus('Duelo iniciado');
+}
+
+function moveDuel(direction: string | undefined): void {
+  if (phase !== 'duel' || !battle || battle.busy) return;
+  if (direction === 'left') duelPosition.x = Math.max(-110, duelPosition.x - 28);
+  else if (direction === 'right') duelPosition.x = Math.min(100, duelPosition.x + 28);
+  else if (direction === 'up') duelPosition.y = Math.max(-42, duelPosition.y - 18);
+  else if (direction === 'down') duelPosition.y = Math.min(42, duelPosition.y + 18);
 }
 
 function finishBattle(result: Exclude<BattleResult, undefined>): void {
@@ -177,6 +192,12 @@ function continueAfterVictory(): void {
   runner.obstacles.length = 0;
   setStatus('Corrida retomada');
   setPhase('run');
+}
+
+function normalizeBattleAction(action: string | undefined): BattleAction | undefined {
+  if (action === 'guard') return 'defend';
+  if (action === 'attack' || action === 'defend' || action === 'special') return action;
+  return undefined;
 }
 
 function performBattleAction(action: BattleAction): void {
@@ -265,7 +286,7 @@ function frame(timestamp: number): void {
   elapsed = timestamp / 1000;
   if (phase === 'run') handleRunner(delta);
   const renderPhase = phase === 'ending' || (phase !== 'run' && phase !== 'title' && battle) ? 'result' : phase;
-  renderer.draw(renderPhase, runner, battle, elapsed, currentEncounter);
+  renderer.draw(renderPhase, runner, battle, elapsed, currentEncounter, duelPosition);
   window.requestAnimationFrame(frame);
 }
 
@@ -293,9 +314,13 @@ for (const button of document.querySelectorAll<HTMLButtonElement>('[data-action]
 
 for (const button of document.querySelectorAll<HTMLButtonElement>('[data-duel]')) {
   button.addEventListener('click', () => {
-    const action = button.dataset.duel as BattleAction | undefined;
+    const action = normalizeBattleAction(button.dataset.duel);
     if (action) performBattleAction(action);
   });
+}
+
+for (const button of document.querySelectorAll<HTMLButtonElement>('[data-duel-move]')) {
+  button.addEventListener('click', () => moveDuel(button.dataset.duelMove));
 }
 
 window.addEventListener('keydown', (event) => {
@@ -304,10 +329,22 @@ window.addEventListener('keydown', (event) => {
     dialogue.advance();
     return;
   }
+  if (
+    (phase === 'title' || phase === 'result' || phase === 'gameover' || phase === 'ending')
+    && (event.key === 'Enter' || event.key === ' ')
+  ) {
+    advancePrimary();
+    return;
+  }
   if (phase === 'duel') {
-    if (event.key === '1') performBattleAction('attack');
-    if (event.key === '2') performBattleAction('defend');
-    if (event.key === '3') performBattleAction('special');
+    const key = event.key.toLowerCase();
+    if (event.key === 'ArrowLeft' || key === 'a') moveDuel('left');
+    else if (event.key === 'ArrowRight' || key === 'd') moveDuel('right');
+    else if (event.key === 'ArrowUp' || key === 'w') moveDuel('up');
+    else if (event.key === 'ArrowDown' || key === 's') moveDuel('down');
+    else if (key === '1' || key === 'q' || key === 'j' || event.key === ' ') performBattleAction('attack');
+    else if (key === '2' || key === 'e') performBattleAction('defend');
+    else if (key === '3' || key === 'r') performBattleAction('special');
     return;
   }
   if (phase !== 'run') return;

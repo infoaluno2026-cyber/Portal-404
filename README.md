@@ -9,6 +9,11 @@ npm install
 npm run dev
 ```
 
+## Controles
+
+- Na corrida: setas ou A/D movem entre as pistas, W/↑ pula e S/↓ desliza.
+- No duelo: setas ou WASD movimentam a Lira pela arena; J, Q, 1 ou Espaço atacam; E ou 2 defende; R ou 3 usa a habilidade especial quando configurada. Os botões na tela também podem ser usados.
+
 ## Mecânicas atuais
 
 - Corrida automática em três pistas, com troca de pista, pulo e deslize.

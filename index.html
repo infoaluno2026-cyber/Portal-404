@@ -64,11 +64,12 @@
           <div class="phase-chip" id="phaseChip"><i></i><span id="phaseLabel">CORRIDA EM ANDAMENTO</span></div>
 
           <div class="overlay" id="overlay">
+            <img class="title-screen-image" src="assets/title-screen.png" alt="Portal 404: A Jornada de Lira. Iniciar jogo, continuar, história e loja." />
             <div class="overlay-panel">
               <p class="eyebrow" id="overlayEyebrow">PORTAL 404 <span>•</span> SETOR INSTÁVEL</p>
               <h2 id="overlayTitle">A cidade está<br /><em>fora do ar.</em></h2>
               <p class="overlay-copy" id="overlayCopy">Corra pelas pistas, desvie dos bloqueios e alcance o Vírus.</p>
-              <button class="primary-button" id="primaryButton" type="button"><span>INICIAR CORRIDA</span><b>↗</b></button>
+              <button class="primary-button" id="primaryButton" type="button" aria-label="Iniciar jogo"><span>INICIAR CORRIDA</span><b>↗</b></button>
               <p class="overlay-hint" id="overlayHint">SETAS OU A / D PARA MOVER <span>·</span> W PULA <span>·</span> S DESLIZA</p>
             </div>
           </div>
@@ -84,9 +85,22 @@
             <button class="control-button" type="button" data-action="right" aria-label="Mover para direita"><span>→</span><small>DIR</small></button>
           </div>
           <div class="duel-controls" id="duelControls" hidden>
-            <button class="duel-button attack-button" type="button" data-duel="attack"><span class="action-glyph">↗</span><span><b>ATAQUE</b><small>Golpe rápido</small></span><kbd>1</kbd></button>
-            <button class="duel-button guard-button" type="button" data-duel="guard"><span class="action-glyph">◇</span><span><b>DESVIAR</b><small>Bloqueia e contra-ataca</small></span><kbd>2</kbd></button>
-            <button class="duel-button pulse-button" id="specialButton" type="button" data-duel="special" disabled><span class="action-glyph">ϟ</span><span><b>HABILIDADE PENDENTE</b><small>Aguardando história</small></span><kbd>3</kbd></button>
+            <div class="duel-pad" aria-label="Movimentar Lira">
+              <span></span>
+              <button class="duel-move-button" type="button" data-duel-move="up" aria-label="Mover para cima">↑</button>
+              <span></span>
+              <button class="duel-move-button" type="button" data-duel-move="left" aria-label="Mover para esquerda">←</button>
+              <span></span>
+              <button class="duel-move-button" type="button" data-duel-move="right" aria-label="Mover para direita">→</button>
+              <span></span>
+              <button class="duel-move-button" type="button" data-duel-move="down" aria-label="Mover para baixo">↓</button>
+              <span></span>
+            </div>
+            <div class="duel-actions">
+              <button class="duel-button attack-button" type="button" data-duel="attack"><span class="action-glyph">↗</span><span><b>ATAQUE</b><small>Golpe rápido</small></span><kbd>J</kbd></button>
+              <button class="duel-button guard-button" type="button" data-duel="defend"><span class="action-glyph">◇</span><span><b>DESVIAR</b><small>Bloqueia e contra-ataca</small></span><kbd>E</kbd></button>
+              <button class="duel-button pulse-button" id="specialButton" type="button" data-duel="special" disabled><span class="action-glyph">ϟ</span><span><b>HABILIDADE PENDENTE</b><small>Aguardando história</small></span><kbd>R</kbd></button>
+            </div>
           </div>
         </div>
 

@@ -95,6 +95,7 @@ button:focus-visible { outline: 2px solid var(--cyan); outline-offset: 3px; }
   background: #090817;
   box-shadow: 0 16px 60px rgba(0, 0, 0, .44), 0 0 38px rgba(109, 45, 255, .12);
 }
+.game-screen.is-title-screen { aspect-ratio: 3 / 2; }
 .game-screen::after {
   position: absolute;
   z-index: 1;
@@ -181,6 +182,51 @@ button:focus-visible { outline: 2px solid var(--cyan); outline-offset: 3px; }
   transition: opacity .18s, visibility .18s;
 }
 .overlay.is-hidden { visibility: hidden; opacity: 0; pointer-events: none; }
+.title-screen-image { display: none; }
+.overlay.is-title-screen {
+  padding: 0;
+  background: none;
+}
+.overlay.is-title-screen .title-screen-image {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+}
+.overlay.is-title-screen .overlay-panel {
+  position: absolute;
+  inset: 0;
+  width: auto;
+  padding: 0;
+  border: 0;
+  background: none;
+  box-shadow: none;
+  animation: none;
+  pointer-events: none;
+}
+.overlay.is-title-screen .overlay-panel > :not(.primary-button) { display: none; }
+.overlay.is-title-screen .primary-button {
+  position: absolute;
+  top: 40.5%;
+  left: 62.6%;
+  width: 29.4%;
+  height: 9%;
+  min-height: 0;
+  padding: 0;
+  border: 1px solid transparent;
+  background: transparent;
+  color: transparent;
+  font-size: 0;
+  pointer-events: auto;
+}
+.overlay.is-title-screen .primary-button:hover {
+  border-color: rgba(85, 223, 255, .5);
+  background: rgba(85, 223, 255, .12);
+}
+.overlay.is-title-screen .primary-button span,
+.overlay.is-title-screen .primary-button b { visibility: hidden; }
 .overlay-panel {
   width: min(410px, 84%);
   padding: 20px 22px 18px;
@@ -251,7 +297,20 @@ button:focus-visible { outline: 2px solid var(--cyan); outline-offset: 3px; }
 .control-button:hover, .control-button:active { border-color: var(--cyan); background: rgba(54, 189, 255, .12); color: var(--cyan); }
 .control-button > span { font: 600 19px 'Oxanium', monospace; line-height: 1.1; }
 .control-button small { font-size: 7px; color: var(--muted); }
-.duel-controls { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 9px; width: min(100%, 630px); }
+.duel-controls { display: flex; align-items: center; gap: 12px; width: min(100%, 760px); }
+.duel-pad { display: grid; grid-template-columns: repeat(3, 28px); grid-template-rows: repeat(3, 22px); gap: 3px; flex: 0 0 auto; }
+.duel-move-button {
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 1px solid var(--line);
+  background: rgba(15, 14, 34, .92);
+  color: var(--cyan);
+  font: 600 13px 'Oxanium', monospace;
+  cursor: pointer;
+}
+.duel-move-button:hover, .duel-move-button:active { border-color: var(--cyan); background: rgba(57, 195, 245, .12); }
+.duel-actions { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 9px; flex: 1; min-width: 0; }
 .duel-button {
   min-width: 0;
   height: 56px;
@@ -322,6 +381,9 @@ button:focus-visible { outline: 2px solid var(--cyan); outline-offset: 3px; }
   .game-controls { min-height: 66px; padding: 6px 0; }
   .control-button { width: min(18vw, 72px); height: 50px; }
   .duel-controls { gap: 5px; }
+  .duel-pad { grid-template-columns: repeat(3, 22px); grid-template-rows: repeat(3, 18px); gap: 2px; }
+  .duel-move-button { font-size: 11px; }
+  .duel-actions { gap: 5px; }
   .duel-button { height: 50px; grid-template-columns: 22px minmax(0, 1fr); gap: 5px; padding: 0 5px; }
   .action-glyph { width: 21px; height: 23px; font-size: 13px; }
   .duel-button b { font-size: 7px; }
@@ -335,7 +397,8 @@ button:focus-visible { outline: 2px solid var(--cyan); outline-offset: 3px; }
 @media (max-width: 390px) {
   .app-shell { width: calc(100% - 20px); }
   .build-tag { display: none; }
-  .duel-controls { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .duel-controls { width: 100%; }
+  .duel-actions { gap: 4px; }
   .duel-button { grid-template-columns: minmax(0, 1fr); justify-items: center; padding: 3px; }
   .action-glyph { display: none; }
   .duel-button > span:nth-child(2) { text-align: center; }
