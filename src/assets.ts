@@ -25,12 +25,17 @@ export class AssetLibrary {
     y: number,
     width: number,
     height: number,
+    columns = frameCount,
     flip = false,
   ): boolean {
     const image = this.image(fileName);
     if (!image?.complete || image.naturalWidth === 0) return false;
 
-    const frameWidth = image.naturalWidth / Math.max(1, frameCount);
+    const columnCount = Math.max(1, Math.min(frameCount, columns));
+    const rowCount = Math.ceil(frameCount / columnCount);
+    const frameWidth = image.naturalWidth / columnCount;
+    const frameHeight = image.naturalHeight / rowCount;
+    const frameIndex = Math.floor(frame % frameCount);
     context.save();
     if (flip) {
       context.translate(x * 2 + width, 0);
@@ -38,10 +43,10 @@ export class AssetLibrary {
     }
     context.drawImage(
       image,
-      Math.floor(frame % frameCount) * frameWidth,
-      0,
+      (frameIndex % columnCount) * frameWidth,
+      Math.floor(frameIndex / columnCount) * frameHeight,
       frameWidth,
-      image.naturalHeight,
+      frameHeight,
       x,
       y,
       width,

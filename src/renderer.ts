@@ -22,9 +22,10 @@ export class GameRenderer {
     battle: BattleController | undefined,
     time: number,
     encounter?: EncounterDefinition,
+    duelPosition = { x: 0, y: 0 },
   ): void {
     this.context.clearRect(0, 0, WIDTH, HEIGHT);
-    if (scene === 'duel' || scene === 'result') this.drawDuel(battle, time, encounter);
+    if (scene === 'duel' || scene === 'result') this.drawDuel(battle, time, encounter, duelPosition);
     else this.drawRunner(runner, time);
   }
 
@@ -112,7 +113,12 @@ export class GameRenderer {
     context.fillRect(0, 290, WIDTH, HEIGHT - 290);
   }
 
-  private drawDuel(battle: BattleController | undefined, time: number, encounter?: EncounterDefinition): void {
+  private drawDuel(
+    battle: BattleController | undefined,
+    time: number,
+    encounter: EncounterDefinition | undefined,
+    duelPosition: { x: number; y: number },
+  ): void {
     const context = this.context;
     const arenaImage = assets.image(encounter?.arena);
     if (arenaImage?.complete && arenaImage.naturalWidth > 0) {
@@ -134,13 +140,18 @@ export class GameRenderer {
     const hero = characters[encounter?.heroId ?? 'lira'] ?? characters.lira;
     const opponent = characters[encounter?.opponentId ?? 'virus'] ?? characters.virus;
     const companion = encounter?.companionId ? characters[encounter.companionId] : undefined;
-    const movement = battle?.animation === 'attack' || battle?.animation === 'special' ? Math.sin(time * 32) * 18 : 0;
+    const movement = battle?.animation === 'attack' || battle?.animation === 'special' ? 34 : 0;
     const heroState = battle?.animation ?? 'idle';
-    if (!this.drawCharacter(hero, heroState, time, 214 + movement, 222, 132, 205)) {
-      this.drawPlaceholderHero(280 + movement, 432, time);
+    const usesAttackSprite = battle?.animation === 'attack' && Boolean(hero.animations.attack);
+    const heroX = (usesAttackSprite ? 164 : 214) + duelPosition.x + movement;
+    const heroY = (usesAttackSprite ? 198 : 222) + duelPosition.y;
+    const heroWidth = usesAttackSprite ? 350 : 132;
+    const heroHeight = usesAttackSprite ? 229 : 205;
+    if (!this.drawCharacter(hero, heroState, time, heroX, heroY, heroWidth, heroHeight)) {
+      this.drawPlaceholderHero(heroX + 66, heroY + 210, time);
     }
-    if (companion && !this.drawCharacter(companion, battle?.animation === 'special' ? 'special' : 'idle', time, 337, 356, 76, 76)) {
-      this.drawPlaceholderPet(375, 432);
+    if (companion && !this.drawCharacter(companion, battle?.animation === 'special' ? 'special' : 'idle', time, 337 + duelPosition.x, 356 + duelPosition.y, 76, 76)) {
+      this.drawPlaceholderPet(375 + duelPosition.x, 432 + duelPosition.y);
     }
     const opponentState: CharacterAnimationState = battle?.animation === 'attack' || battle?.animation === 'special' ? 'hit' : 'idle';
     if (!this.drawCharacter(opponent, opponentState, time, 626, 142, 212, 292, true)) {
@@ -175,6 +186,7 @@ export class GameRenderer {
       y,
       width,
       height,
+      animation.columns,
       flip || Boolean(animation.flip),
     );
   }
